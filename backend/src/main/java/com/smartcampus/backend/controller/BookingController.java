@@ -13,8 +13,7 @@ import java.util.Map;
 
 /**
  * Booking Management REST Controller
- * Member: Anne (IT2345599) — Module B
- *
+ * 
  * Endpoints:
  *   GET    /api/bookings                    — Admin: view all bookings
  *   GET    /api/bookings/{id}               — Get single booking by ID

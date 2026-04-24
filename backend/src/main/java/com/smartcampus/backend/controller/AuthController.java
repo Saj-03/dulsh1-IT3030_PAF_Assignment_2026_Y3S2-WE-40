@@ -57,9 +57,51 @@ public class AuthController {
             response.put("email", user.getEmail());
             response.put("name", user.getName());
             response.put("role", user.getRole().name());
+            response.put("hasPassword", user.getPassword() != null);
             return ResponseEntity.ok(response);
         }
         return ResponseEntity.status(404).body(Map.of("message", "User not found"));
+    }
+
+    @PostMapping("/update-name")
+    public ResponseEntity<?> updateName(Authentication authentication, @RequestBody Map<String, String> payload) {
+        try {
+            if (authentication == null) return ResponseEntity.status(401).build();
+            String email = authentication.getName();
+            User user = userService.getUserByEmail(email).orElseThrow();
+            
+            String newName = payload.get("newName");
+            if (newName == null || newName.isBlank()) {
+                return ResponseEntity.badRequest().body(Map.of("message", "Name is required"));
+            }
+            
+            User updated = userService.updateName(user.getId(), newName);
+            return ResponseEntity.ok(Map.of("name", updated.getName(), "message", "Name updated successfully"));
+        } catch (Exception e) {
+            return ResponseEntity.badRequest().body(Map.of("message", e.getMessage()));
+        }
+    }
+
+    @PostMapping("/change-password")
+    public ResponseEntity<?> changePassword(Authentication authentication, @RequestBody Map<String, String> payload) {
+        try {
+            if (authentication == null) return ResponseEntity.status(401).build();
+            String email = authentication.getName();
+            User user = userService.getUserByEmail(email).orElseThrow();
+            
+            String oldPassword = payload.get("oldPassword");
+            String newPassword = payload.get("newPassword");
+            
+            if (newPassword == null || newPassword.length() < 8) {
+                return ResponseEntity.badRequest().body(Map.of("message", "New password must be at least 8 characters"));
+            }
+            
+            userService.updatePassword(user.getId(), oldPassword, newPassword);
+            return ResponseEntity.ok(Map.of("message", "Password updated successfully"));
+        } catch (Exception e) {
+            String msg = e.getMessage();
+            return ResponseEntity.status(msg.contains("password") ? 401 : 400).body(Map.of("message", msg));
+        }
     }
 
     // ── POST /api/auth/register ──────────────────────────────────────

@@ -12,6 +12,61 @@ const ReportIssue = () => {
     const [resource, setResource] = useState(null);
     const [formData, setFormData] = useState({ category: 'IT_EQUIPMENT', priority: 'MEDIUM', description: '', contactDetails: '' });
     const [files, setFiles] = useState([]);
+    const [contactError, setContactError] = useState('');
+
+    // Sanitization function for phone numbers - only 10 digits
+    const sanitizePhoneNumber = (input) => {
+        const digitsOnly = input.replace(/\D/g, '');
+        return digitsOnly.slice(0, 10);
+    };
+
+    // Sanitization function for email
+    const sanitizeEmail = (input) => {
+        return input.trim().toLowerCase();
+    };
+
+    // Validation function for contact details
+    const validateContactDetails = (contact) => {
+        const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+        const phoneRegex = /^\d{10}$/;
+        
+        if (emailRegex.test(contact)) {
+            return { isValid: true, type: 'email' };
+        } else if (phoneRegex.test(contact)) {
+            return { isValid: true, type: 'phone' };
+        } else if (contact.length === 0) {
+            return { isValid: false, error: 'Contact details are required' };
+        } else if (/^\d+$/.test(contact) && contact.length < 10) {
+            return { isValid: false, error: `Phone number must be 10 digits (${contact.length}/10)` };
+        } else if (/^\d+$/.test(contact) && contact.length > 10) {
+            return { isValid: false, error: 'Phone number cannot exceed 10 digits' };
+        } else {
+            return { isValid: false, error: 'Enter a valid email (user@domain.com) or 10-digit phone number' };
+        }
+    };
+
+    // Handle contact details change with sanitization
+    const handleContactDetailsChange = (e) => {
+        let value = e.target.value;
+        
+        // If input contains only digits, sanitize as phone number
+        if (/^\d*$/.test(value)) {
+            value = sanitizePhoneNumber(value);
+        } else if (value.includes('@')) {
+            // If input contains @, sanitize as email
+            value = sanitizeEmail(value);
+        }
+        
+        setFormData({...formData, contactDetails: value});
+        
+        // Validate and show error message
+        const validation = validateContactDetails(value);
+        if (!validation.isValid) {
+            setContactError(validation.error);
+        } else {
+            setContactError('');
+        }
+    };
 
     useEffect(() => {
         api.get(`/resources/${id}`).then(res => setResource(res.data)).catch(err => console.error(err));
@@ -19,10 +74,18 @@ const ReportIssue = () => {
 
     const handleSubmit = async (e) => {
         e.preventDefault();
-        if (!formData.description.trim() || !formData.contactDetails.trim()) {
-            showNotification('Please fill in all required fields properly.', 'error');
+        if (!formData.description.trim()) {
+            showNotification('Please fill in the description field.', 'error');
             return;
         }
+        
+        // Validate contact details before submission
+        const validation = validateContactDetails(formData.contactDetails);
+        if (!validation.isValid) {
+            showNotification(`Invalid contact details: ${validation.error}`, 'error');
+            return;
+        }
+        
         try {
             if (files.length > 3) {
                 showNotification('Maximum 3 attachments allowed.', 'error');
@@ -111,7 +174,16 @@ const ReportIssue = () => {
                             <label className="form-label">Preferred Contact Details</label>
                             <input required type="text" value={formData.contactDetails} className="premium-input"
                                    placeholder="e.g. john@university.edu or 0771234567"
-                                   onChange={e => setFormData({...formData, contactDetails: e.target.value})} />
+                                   onChange={handleContactDetailsChange}
+                                   style={{
+                                       borderColor: contactError ? '#ef4444' : 'var(--border)',
+                                       borderWidth: contactError ? '2px' : '1px'
+                                   }} />
+                            {contactError && (
+                                <p style={{ color: '#ef4444', fontSize: '13px', marginTop: '8px', fontWeight: '500' }}>
+                                    ⚠️ {contactError}
+                                </p>
+                            )}
                         </div>
 
                         <div>

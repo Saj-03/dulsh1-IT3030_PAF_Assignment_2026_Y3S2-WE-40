@@ -1,0 +1,42 @@
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# Build
+target/
+build/
+dist/
+*.class
+*.jar
+*.war
+
+# Dependencies
+node_modules/
+*.npm
+package-lock.json
+
+# Environment & Secrets
+.env
+.env.local
+.env.*.local
+backend/src/main/resources/application.properties
+backend/src/main/resources/application-prod.properties
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Maven
+.mvn/wrapper/maven-wrapper.jar
+mvn-wrapper.log
+
+# Logs
+*.log
+backend.log
+
+# Temporary files
+*.tmp
+*.bak

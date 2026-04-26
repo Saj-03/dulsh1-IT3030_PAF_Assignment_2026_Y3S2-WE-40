@@ -7,11 +7,16 @@ export default defineConfig({
   optimizeDeps: {
     include: ['jspdf', 'jspdf-autotable']
   },
+  resolve: {
+    alias: {
+      'jspdf': 'jspdf'
+    }
+  },
   build: {
     rollupOptions: {
       output: {
         manualChunks: (id) => {
-          if (id.includes('jspdf')) {
+          if (id.includes('node_modules/jspdf')) {
             return 'jspdf'
           }
         }

@@ -382,36 +382,6 @@ Implemented value-adding features:
 - **User**: User profiles with roles and OAuth data
 - **Notification**: Event-based notifications with read/unread status
 
----
-
-## 🤝 Contributing
-
-This is a **group assignment** with individual contribution tracking. Refer to the team contribution section above for role definitions.
-
-**Commit Guidelines**:
-- Use meaningful commit messages
-- Commit regularly to show incremental progress
-- Include member name in commits for major features
-- Avoid single-day bulk commits
-
----
-
-## 📝 Submission Checklist
-
-- [ ] GitHub repository with active commit history
-- [ ] README with setup instructions (this file)
-- [ ] Final report (IT3030_PAF_Assignment_2026_GroupXX.pdf)
-- [ ] Running system (demonstrable locally)
-- [ ] API endpoints fully implemented (each member: 4+ endpoints)
-- [ ] Unit/integration tests with evidence
-- [ ] Postman collection for API testing
-- [ ] Screenshots of key workflows
-- [ ] GitHub Actions CI/CD workflow (build + test)
-- [ ] Database schema documentation
-- [ ] Team contribution summary
-
----
-
 ## 📞 Support & Documentation
 
 For questions or issues:
